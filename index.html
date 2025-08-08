@@ -6,12 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     @font-face {
-      font-family: 'Ownglyph_ParkDaHyun';
-      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkDaHyun.woff2') format('woff2');
+      font-family: 'Ownglyph_meetme-Rg';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_1@1.0/Ownglyph_meetme-Rg.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
     }
 
     body {
-      font-family: 'Ownglyph_ParkDaHyun', sans-serif;
+      font-family: 'Ownglyph_meetme-Rg', sans-serif;
       text-align: center;
       background: #f9f9f9;
       margin: 0;
@@ -20,11 +22,11 @@
 
     h1 {
       margin-top: 20px;
+      font-weight: normal;
+      font-size: 35px;
     }
-
-    #speed {
-      font-weight: bold;
-    }
+    p { font-size: 16px; margin: 0; }
+    #speed { letter-spacing: 1.5px; }
 
     #spawnArea {
       margin: 20px auto;
@@ -53,18 +55,7 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
-    #startBtn {
-      background: #007bff;
-      color: white;
-    }
-
-    #kakaoShareBtn {
-      background-color: #fee500;
-      color: #3c1e1e;
-      margin-top: 10px;
-      display: none;
-    }
+    #startBtn { background: #007bff; color: white; }
 
     #resultPopup {
       display: none;
@@ -73,49 +64,122 @@
       left: 50%;
       transform: translate(-50%, -50%);
       width: 300px;
-      background: #ffff66;
+      background: #ffffff;
       padding: 20px;
-      border: 2px solid black;
+      border: 6px solid;
       border-radius: 10px;
       z-index: 10;
+      text-align: center;
+    }
+	#resultPopup p { margin: 0; line-height: 1; }  /* 기본적으로 딱 붙임 */
+	#resultPopup p + p { margin-top: 10px; }     
+
+    #restartBtn {
+      font-family: 'Ownglyph_meetme-Rg', sans-serif;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 10px;
+      font-size: 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      min-width: 120px;
+      margin: 10px auto 10px auto;
+      text-align: center;
     }
 
-    #resultPopup button {
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
       margin-top: 10px;
     }
 
-    #closeBtn {
-      background: crimson;
-      color: white;
+    #kakaoShareBtn {
+      font-family: 'Ownglyph_meetme-Rg', sans-serif;
+      font-size: 20px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      flex: 1;
+      white-space: nowrap;
+      min-width: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-color: #fee500;
+      color: #3c1e1e;
+    }
+    #copyLinkBtn {
+      font-family: 'Ownglyph_meetme-Rg', sans-serif;
+      font-size: 20px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      min-width: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-color: #e0e0e0;
+      color: #000;
     }
 
-    #restartBtn {
-      background: #007bff;
-      color: white;
+    /* 하단 디버그 바: 반응시간 실시간 표시 */
+    #debugBar{
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,.75);
+      color: #fff;
+      font-size: 14px;
+      padding: 6px 10px;
+      text-align: center;
+      letter-spacing: .5px;
     }
 
     @media (max-width: 768px) {
-      #spawnArea {
-        width: 90%;
-        height: 500px;
-      }
-
-      .checkbox-item {
-        font-size: 18px;
-      }
+      #spawnArea { width: 90%; height: 500px; }
+      .checkbox-item { font-size: 18px; }
+      #resultPopup { top: 35%; }
     }
   </style>
 </head>
 <body>
-  <h1>🎓 수강신청 반응속도 테스트</h1>
+  <h1>🎓수강신청 반응속도 테스트</h1>
   <p>📶 인터넷 속도: <span id="speed">확인 중...</span> Mbps (평균)</p>
   <button id="startBtn">테스트 시작</button>
+
   <div id="spawnArea">
     <div id="resultPopup">
       <div id="resultContent"></div>
-      <button id="restartBtn">🔄 다시하기</button>
-      <button id="closeBtn">❌ 닫기</button><br>
-      <button id="kakaoShareBtn">📢 카카오톡으로 공유</button>
+
+      <button id="restartBtn">
+        <img src="https://ifh.cc/g/5VcNTr.png" alt="다시하기 아이콘"
+             style="width:16px;height:16px;margin-top:1px;margin-right:3px;vertical-align:middle;" />
+        다시하기
+      </button>
+
+      <div class="button-row">
+        <button id="kakaoShareBtn">
+          <img src="https://ifh.cc/g/wvcBH4.png" alt="카카오톡 공유 아이콘"
+               style="width:20px;height:20px;margin-right:2px;vertical-align:middle;" />
+          카카오톡 공유하기
+        </button>
+
+        <button id="copyLinkBtn">
+          <img src="https://ifh.cc/g/QOmjMO.png" alt="링크 복사 아이콘"
+               style="width:20px;height:20px;margin-right:2px;vertical-align:middle;" />
+          링크 복사
+        </button>
+      </div>
     </div>
   </div>
 
@@ -123,59 +187,78 @@
   <script>
     Kakao.init('2027b405148a706519d8960d4db5505d');
 
+    const maxBoxes = 1;
+    const delayOptions = [500, 1000, 1500, 2000];
+    const checkboxes = [];
     let totalReactionTime = 0, currentIndex = 0;
-    const maxBoxes = 3, delayOptions = [500, 1000, 1500, 2000], checkboxes = [];
+
     const spawnArea = document.getElementById("spawnArea");
     const resultPopup = document.getElementById("resultPopup");
     const resultContent = document.getElementById("resultContent");
-    const shareBtn = document.getElementById("kakaoShareBtn");
-    const closeBtn = document.getElementById("closeBtn");
     const restartBtn = document.getElementById("restartBtn");
+    const shareBtn = document.getElementById("kakaoShareBtn");
+    const copyLinkBtn = document.getElementById("copyLinkBtn");
     const startBtn = document.getElementById("startBtn");
     const speedDisplay = document.getElementById("speed");
+
+    // ✅ 반응시간 전용 타이머 (항상 '현재 뜬 항목'에 대한 시간만 표시)
+    let rafId = null;
+    function startReactionTimer(startMs) {
+      stopReactionTimer();
+      const tick = () => {
+        const sec = (performance.now() - startMs) / 1000;
+        document.getElementById("liveSeconds").textContent = sec.toFixed(3);
+        rafId = requestAnimationFrame(tick);
+      };
+      rafId = requestAnimationFrame(tick);
+    }
+    function stopReactionTimer() {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    }
+
+    // ✅ 카카오 공유용 최근 등급 저장
+    let lastGrade = null;
 
     async function measureSpeed() {
       const url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg";
       const sizeMB = 2.2;
       let total = 0;
-
       for (let i = 0; i < 3; i++) {
         const start = performance.now();
         await fetch(url + "?t=" + Date.now(), { cache: "no-store" });
         const end = performance.now();
         total += (sizeMB * 8 / ((end - start) / 1000));
       }
-
       speedDisplay.textContent = (total / 3).toFixed(2);
     }
-
     measureSpeed();
 
     function resetGameUI() {
       resultPopup.style.display = "none";
       resultContent.innerHTML = "";
-      shareBtn.style.display = "none";
-      spawnArea.innerHTML = "";
-      spawnArea.appendChild(resultPopup);
+      spawnArea.querySelectorAll(".checkbox-item").forEach(el => el.remove());
       startBtn.disabled = false;
       startBtn.textContent = "테스트 시작";
+      stopReactionTimer();
+      document.getElementById("liveSeconds").textContent = "0.000";
+      lastGrade = null;
+      totalReactionTime = 0;
+      currentIndex = 0;
+      checkboxes.length = 0;
     }
 
     startBtn.onclick = () => {
       startBtn.disabled = true;
       resetGameUI();
-      totalReactionTime = 0;
-      currentIndex = 0;
-      checkboxes.length = 0;
       countdown(3);
     };
+    restartBtn.onclick = () => startBtn.click();
 
-    restartBtn.onclick = () => {
-      startBtn.click(); // 다시 시작
-    };
-
-    closeBtn.onclick = () => {
-      resultPopup.style.display = "none";
+    copyLinkBtn.onclick = () => {
+      navigator.clipboard.writeText(location.href).then(() => {
+        copyLinkBtn.textContent = "✅ 복사됨!";
+        setTimeout(() => copyLinkBtn.textContent = "링크 복사", 1500);
+      });
     };
 
     function countdown(sec) {
@@ -192,7 +275,8 @@
       for (let i = 0; i < maxBoxes; i++) {
         const el = document.createElement("div");
         el.className = "checkbox-item";
-        el.innerHTML = `<label><input type="checkbox"> 전공 ${i+1}</label>`;
+        const labelType = Math.random() < 0.5 ? "전공" : "교양";
+        el.innerHTML = `<label><input type="checkbox"> ${labelType} ${i + 1}</label>`;
         spawnArea.appendChild(el);
         checkboxes.push({ el, shownAt: 0 });
       }
@@ -211,9 +295,15 @@
         item.el.style.display = "block";
         item.shownAt = performance.now();
 
+        // ✅ 반응시간 타이머 시작 (항목이 보인 시점부터)
+        startReactionTimer(item.shownAt);
+
         const input = item.el.querySelector("input");
         input.addEventListener("click", () => {
           if (input.checked && !input.disabled) {
+            // ✅ 클릭 즉시 타이머 정지
+            stopReactionTimer();
+
             totalReactionTime += performance.now() - item.shownAt;
             input.disabled = true;
             currentIndex++;
@@ -224,7 +314,8 @@
     }
 
     function randomPos() {
-      const w = spawnArea.clientWidth, h = spawnArea.clientHeight;
+      const w = spawnArea.clientWidth;
+      const h = spawnArea.clientHeight;
       return {
         x: Math.floor(Math.random() * (w - 120)),
         y: Math.floor(Math.random() * (h - 40))
@@ -232,34 +323,67 @@
     }
 
     function getGrade(sec) {
-      if (sec <= 8) return { label: "1등급 🎉", image: "https://ifh.cc/g/mKzKh5.png" };
-      else if (sec <= 10) return { label: "2등급 👍", image: "https://ifh.cc/g/mKzKh5.png" };
-      else if (sec <= 13) return { label: "3등급 😀", image: "https://ifh.cc/g/mKzKh5.png" };
-      else if (sec <= 18) return { label: "4등급 😅", image: "https://ifh.cc/g/mKzKh5.png" };
-      else return { label: "5등급 😢", image: "https://ifh.cc/g/mKzKh5.png" };
+      if (sec <= 5) return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
+      else if (sec <= 8) return { label: "2등급👍", image: "https://ifh.cc/g/f1OJ6F.jpg" };
+      else if (sec <= 13) return { label: "3등급😀", image: "https://ifh.cc/g/nL9opl.png" };
+      else return { label: "4등급😅", image: "https://ifh.cc/g/XzsDMP.png" };
     }
 
     function showResult() {
-      const sec = (totalReactionTime / 1000).toFixed(2);
-      const grade = getGrade(sec);
+  // 혹시 남아있으면 안전하게 정지
+  stopReactionTimer();
 
-      resultContent.innerHTML = `
-        <p>⏱ 총 반응 시간: ${sec}초</p>
-        <p>📊 수강신청 등급: <strong>${grade.label}</strong></p>
-        <img src="${grade.image}" alt="${grade.label}" width="200" />
-      `;
+  const sec = (totalReactionTime / 1000).toFixed(2);
+  const grade = getGrade(sec);
+  lastGrade = grade;
 
-      resultPopup.style.display = "block";
-      shareBtn.style.display = "inline-block";
-    }
+  // 🎨 등급별 그라데이션 테두리
+  let borderGradient = "linear-gradient(45deg, #000, #000)"; // 기본값
+  if (grade.label.includes("1등급")) {
+    borderGradient = "linear-gradient(60deg, #FFD700, #FFA500, #FF69B4, #FFD700)";
+  } else if (grade.label.includes("2등급")) {
+  borderGradient = "linear-gradient(38deg, #bafdd3, #62c6c0, #47eaff, #216373, #5ec9af, #3fa0a2)";
+} else if (grade.label.includes("3등급")) {
+  borderGradient = "linear-gradient(168deg, #a9a9a9, #f0f0f0, #b0c4de, #696969, #c0c0c0, #a9a9a9)";
+} else {
+    borderGradient = "linear-gradient(158deg, #8b4513, #a0522d, #9f7d1d, #8b4513)";
+  }
 
+  resultPopup.style.border = "6px solid";
+  resultPopup.style.borderImage = `${borderGradient} 1`;
+  resultPopup.style.borderRadius = "10px";
+
+  resultContent.style.display = 'flex';
+  resultContent.style.flexDirection = 'column';
+
+  resultContent.innerHTML = `
+    <p style="font-size:25px;text-align:center;margin-bottom:2px;">
+      내 수강신청 등급은?</p>
+    <p style="font-size:33px;text-align:center;margin-bottom:10px;transform:translateX(10px);">
+      ${grade.label}</p>
+    <p style="font-size:15px;text-align:center;margin-bottom:5px;">
+      총 반응 시간: ${sec}초</p>
+    <img src="${grade.image}" alt="${grade.label}" width="200" style="display:block;margin:0 auto;" />
+  `;
+
+  resultPopup.style.display = "block";
+  startBtn.innerHTML = `<img src="https://ifh.cc/g/5VcNTr.png" alt="다시하기 아이콘" style="width: 16px; height: 16px; vertical-align: middle;margin-bottom: 3px; margin-right: 1px;" /> 다시하기`;
+  startBtn.disabled = false;
+}
+
+
+    // ✅ 카카오 공유: 등급별 이미지/타이틀
     shareBtn.onclick = () => {
+      if (!lastGrade) {
+        alert("먼저 테스트를 완료해주세요!");
+        return;
+      }
       Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
-          title: '내 수강신청 반응속도 등급은?',
+          title: `내 수강신청 반응속도 등급은? (${lastGrade.label})`,
           description: '당신도 도전해보세요!',
-          imageUrl: 'https://ifh.cc/g/mKzKh5.png',
+          imageUrl: lastGrade.image,
           link: {
             mobileWebUrl: location.href,
             webUrl: location.href
@@ -275,5 +399,8 @@
       });
     };
   </script>
+
+  <!-- ✅ 하단 디버그 바: 현재 항목에 대한 '반응시간'만 실시간 표시 -->
+  <div id="debugBar">⏱ 반응 시간: <span id="liveSeconds">0.000</span>초</div>
 </body>
 </html>
