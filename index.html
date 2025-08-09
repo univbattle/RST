@@ -328,7 +328,7 @@ function showToast(message) {
     function getGrade(sec) {
       if (sec <= 6) return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
       else if (sec <= 9) return { label: "2등급🙏", image: "https://ifh.cc/g/f1OJ6F.jpg" };
-      else if (sec <= 12) return { label: "3등급🛖", image: "https://ifh.cc/g/nL9opl.png" };
+      else if (sec <= 12) return { label: "3등급🧺", image: "https://ifh.cc/g/nL9opl.png" };
       else return { label: "4등급💩", image: "https://ifh.cc/g/XzsDMP.png" };
     }
 
@@ -372,7 +372,7 @@ function showToast(message) {
       Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
-         title: `내 수강신청 반응속도 등급은?<br>(${lastGrade.label})`,
+         title: `내 수강신청 반응속도 등급은?    (${lastGrade.label})`,
           description: '당신도 도전해보세요!',
           imageUrl: lastGrade.image,
           link: { mobileWebUrl: location.href, webUrl: location.href }
