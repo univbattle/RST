@@ -323,10 +323,10 @@
     }
 
     function getGrade(sec) {
-      if (sec <= 5) return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
-      else if (sec <= 8) return { label: "2등급👍", image: "https://ifh.cc/g/f1OJ6F.jpg" };
-      else if (sec <= 13) return { label: "3등급😀", image: "https://ifh.cc/g/nL9opl.png" };
-      else return { label: "4등급😅", image: "https://ifh.cc/g/XzsDMP.png" };
+      if (sec <= 7) return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
+      else if (sec <= 10) return { label: "2등급🙏", image: "https://ifh.cc/g/f1OJ6F.jpg" };
+      else if (sec <= 13) return { label: "3등급🛖", image: "https://ifh.cc/g/nL9opl.png" };
+      else return { label: "4등급💩", image: "https://ifh.cc/g/XzsDMP.png" };
     }
 
     function showResult() {
@@ -340,13 +340,13 @@
   // 🎨 등급별 그라데이션 테두리
   let borderGradient = "linear-gradient(45deg, #000, #000)"; // 기본값
   if (grade.label.includes("1등급")) {
-    borderGradient = "linear-gradient(60deg, #FFD700, #FFA500, #FF69B4, #FFD700)";
+    borderGradient = "linear-gradient(60deg, #ffe75c, #ffb62e, #fd64a6, #ffe44d)";
   } else if (grade.label.includes("2등급")) {
-  borderGradient = "linear-gradient(38deg, #bafdd3, #62c6c0, #47eaff, #458292, #5ec9af, #3fa0a2)";
+  borderGradient = "linear-gradient(42deg, #a6dcdd, #87e8e2, #51d1e1, #458292, #92e2dd, #3fa0a2)";
 } else if (grade.label.includes("3등급")) {
-  borderGradient = "linear-gradient(168deg, #a9a9a9, #d2cbcb, #b0c4de, #696969, #c0c0c0, #a9a9a9)";
+  borderGradient = "linear-gradient(69deg, #a9a9a9, #d2cbcb, #c7d0db, #696969, #c0c0c0, #a9a9a9)";
 } else {
-    borderGradient = "linear-gradient(158deg, #8b4513, #a0522d, #9f7d1d, #8b4513)";
+    borderGradient = "linear-gradient(82deg, #8b4513, #9f7d1d, #dfa758, #8b4513)";
   }
 
   resultPopup.style.border = "6px solid";
