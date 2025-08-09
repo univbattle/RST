@@ -1,3 +1,4 @@
+<!-- 디버그바 삭제된 HTML -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -71,8 +72,8 @@
       z-index: 10;
       text-align: center;
     }
-	#resultPopup p { margin: 0; line-height: 1; }  /* 기본적으로 딱 붙임 */
-	#resultPopup p + p { margin-top: 10px; }     
+    #resultPopup p { margin: 0; line-height: 1; }
+    #resultPopup p + p { margin-top: 10px; }
 
     #restartBtn {
       font-family: 'Ownglyph_meetme-Rg', sans-serif;
@@ -132,19 +133,6 @@
       color: #000;
     }
 
-    /* 하단 디버그 바: 반응시간 실시간 표시 */
-    #debugBar{
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      z-index: 9999;
-      background: rgba(0,0,0,.75);
-      color: #fff;
-      font-size: 14px;
-      padding: 6px 10px;
-      text-align: center;
-      letter-spacing: .5px;
-    }
-
     @media (max-width: 768px) {
       #spawnArea { width: 90%; height: 500px; }
       .checkbox-item { font-size: 18px; }
@@ -201,21 +189,6 @@
     const startBtn = document.getElementById("startBtn");
     const speedDisplay = document.getElementById("speed");
 
-    // ✅ 반응시간 전용 타이머 (항상 '현재 뜬 항목'에 대한 시간만 표시)
-    let rafId = null;
-    function startReactionTimer(startMs) {
-      stopReactionTimer();
-      const tick = () => {
-        const sec = (performance.now() - startMs) / 1000;
-        document.getElementById("liveSeconds").textContent = sec.toFixed(3);
-        rafId = requestAnimationFrame(tick);
-      };
-      rafId = requestAnimationFrame(tick);
-    }
-    function stopReactionTimer() {
-      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    }
-
     // ✅ 카카오 공유용 최근 등급 저장
     let lastGrade = null;
 
@@ -239,8 +212,6 @@
       spawnArea.querySelectorAll(".checkbox-item").forEach(el => el.remove());
       startBtn.disabled = false;
       startBtn.textContent = "테스트 시작";
-      stopReactionTimer();
-      document.getElementById("liveSeconds").textContent = "0.000";
       lastGrade = null;
       totalReactionTime = 0;
       currentIndex = 0;
@@ -295,15 +266,9 @@
         item.el.style.display = "block";
         item.shownAt = performance.now();
 
-        // ✅ 반응시간 타이머 시작 (항목이 보인 시점부터)
-        startReactionTimer(item.shownAt);
-
         const input = item.el.querySelector("input");
         input.addEventListener("click", () => {
           if (input.checked && !input.disabled) {
-            // ✅ 클릭 즉시 타이머 정지
-            stopReactionTimer();
-
             totalReactionTime += performance.now() - item.shownAt;
             input.disabled = true;
             currentIndex++;
@@ -330,49 +295,37 @@
     }
 
     function showResult() {
-  // 혹시 남아있으면 안전하게 정지
-  stopReactionTimer();
+      const sec = (totalReactionTime / 1000).toFixed(2);
+      const grade = getGrade(sec);
+      lastGrade = grade;
 
-  const sec = (totalReactionTime / 1000).toFixed(2);
-  const grade = getGrade(sec);
-  lastGrade = grade;
+      let borderGradient = "linear-gradient(45deg, #000, #000)";
+      if (grade.label.includes("1등급")) {
+        borderGradient = "linear-gradient(60deg, #ffe75c, #ffb62e, #fd64a6, #ffe44d)";
+      } else if (grade.label.includes("2등급")) {
+        borderGradient = "linear-gradient(42deg, #a6dcdd, #87e8e2, #51d1e1, #458292, #92e2dd, #3fa0a2)";
+      } else if (grade.label.includes("3등급")) {
+        borderGradient = "linear-gradient(69deg, #a9a9a9, #d2cbcb, #c7d0db, #696969, #c0c0c0, #a9a9a9)";
+      } else {
+        borderGradient = "linear-gradient(82deg, #8b4513, #9f7d1d, #dfa758, #8b4513)";
+      }
 
-  // 🎨 등급별 그라데이션 테두리
-  let borderGradient = "linear-gradient(45deg, #000, #000)"; // 기본값
-  if (grade.label.includes("1등급")) {
-    borderGradient = "linear-gradient(60deg, #ffe75c, #ffb62e, #fd64a6, #ffe44d)";
-  } else if (grade.label.includes("2등급")) {
-  borderGradient = "linear-gradient(42deg, #a6dcdd, #87e8e2, #51d1e1, #458292, #92e2dd, #3fa0a2)";
-} else if (grade.label.includes("3등급")) {
-  borderGradient = "linear-gradient(69deg, #a9a9a9, #d2cbcb, #c7d0db, #696969, #c0c0c0, #a9a9a9)";
-} else {
-    borderGradient = "linear-gradient(82deg, #8b4513, #9f7d1d, #dfa758, #8b4513)";
-  }
+      resultPopup.style.border = "6px solid";
+      resultPopup.style.borderImage = `${borderGradient} 1`;
+      resultPopup.style.borderRadius = "10px";
 
-  resultPopup.style.border = "6px solid";
-  resultPopup.style.borderImage = `${borderGradient} 1`;
-  resultPopup.style.borderRadius = "10px";
+      resultContent.innerHTML = `
+        <p style="font-size:25px;text-align:center;margin-bottom:2px;">내 수강신청 등급은?</p>
+        <p style="font-size:33px;text-align:center;margin-bottom:10px;transform:translateX(10px);">${grade.label}</p>
+        <p style="font-size:15px;text-align:center;margin-bottom:5px;">총 반응 시간: ${sec}초</p>
+        <img src="${grade.image}" alt="${grade.label}" width="200" style="display:block;margin:0 auto;" />
+      `;
 
-  resultContent.style.display = 'flex';
-  resultContent.style.flexDirection = 'column';
+      resultPopup.style.display = "block";
+      startBtn.innerHTML = `<img src="https://ifh.cc/g/5VcNTr.png" style="width:16px;height:16px;margin-bottom:3px;margin-right:1px;vertical-align:middle;" /> 다시하기`;
+      startBtn.disabled = false;
+    }
 
-  resultContent.innerHTML = `
-    <p style="font-size:25px;text-align:center;margin-bottom:2px;">
-      내 수강신청 등급은?</p>
-    <p style="font-size:33px;text-align:center;margin-bottom:10px;transform:translateX(10px);">
-      ${grade.label}</p>
-    <p style="font-size:15px;text-align:center;margin-bottom:5px;">
-      총 반응 시간: ${sec}초</p>
-    <img src="${grade.image}" alt="${grade.label}" width="200" style="display:block;margin:0 auto;" />
-  `;
-
-  resultPopup.style.display = "block";
-  startBtn.innerHTML = `<img src="https://ifh.cc/g/5VcNTr.png" alt="다시하기 아이콘" style="width: 16px; height: 16px; vertical-align: middle;margin-bottom: 3px; margin-right: 1px;" /> 다시하기`;
-  startBtn.disabled = false;
-}
-
-
-    // ✅ 카카오 공유: 등급별 이미지/타이틀
     shareBtn.onclick = () => {
       if (!lastGrade) {
         alert("먼저 테스트를 완료해주세요!");
@@ -384,23 +337,11 @@
           title: `내 수강신청 반응속도 등급은? (${lastGrade.label})`,
           description: '당신도 도전해보세요!',
           imageUrl: lastGrade.image,
-          link: {
-            mobileWebUrl: location.href,
-            webUrl: location.href
-          }
+          link: { mobileWebUrl: location.href, webUrl: location.href }
         },
-        buttons: [{
-          title: '테스트 하러 가기',
-          link: {
-            mobileWebUrl: location.href,
-            webUrl: location.href
-          }
-        }]
+        buttons: [{ title: '테스트 하러 가기', link: { mobileWebUrl: location.href, webUrl: location.href } }]
       });
     };
   </script>
-
-  <!-- ✅ 하단 디버그 바: 현재 항목에 대한 '반응시간'만 실시간 표시 -->
-  <div id="debugBar">⏱ 반응 시간: <span id="liveSeconds">0.000</span>초</div>
 </body>
 </html>
