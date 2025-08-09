@@ -226,11 +226,10 @@
     restartBtn.onclick = () => startBtn.click();
 
     copyLinkBtn.onclick = () => {
-      navigator.clipboard.writeText(location.href).then(() => {
-        copyLinkBtn.textContent = "✅ 복사됨!";
-        setTimeout(() => copyLinkBtn.textContent = "링크 복사", 1500);
-      });
-    };
+  navigator.clipboard.writeText(location.href)
+    .then(() => showToast('복사됐어요✔️'))
+    .catch(() => showToast('복사 실패😢'));
+};
 
     function countdown(sec) {
       if (sec > 0) {
@@ -253,6 +252,31 @@
       }
       showNext();
     }
+function showToast(message) {
+  const t = document.createElement('div');
+  t.textContent = message;
+  Object.assign(t.style, {
+    position: 'fixed',
+    left: '50%',
+    bottom: '24px',
+    transform: 'translateX(-50%)',
+    background: 'rgba(0,0,0,.8)',
+    color: '#fff',
+    padding: '8px 12px',
+    borderRadius: '8px',
+    fontSize: '14px',
+    zIndex: 9999,
+    opacity: '0',
+    transition: 'opacity .15s ease'
+  });
+  document.body.appendChild(t);
+  requestAnimationFrame(() => { t.style.opacity = '1'; });
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.addEventListener('transitionend', () => t.remove(), { once: true });
+  }, 1000);
+}
+
 
     function showNext() {
       if (currentIndex >= maxBoxes) return showResult();
@@ -288,9 +312,9 @@
     }
 
     function getGrade(sec) {
-      if (sec <= 7) return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
-      else if (sec <= 10) return { label: "2등급🙏", image: "https://ifh.cc/g/f1OJ6F.jpg" };
-      else if (sec <= 13) return { label: "3등급🛖", image: "https://ifh.cc/g/nL9opl.png" };
+      if (sec <= 6) return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
+      else if (sec <= 9) return { label: "2등급🙏", image: "https://ifh.cc/g/f1OJ6F.jpg" };
+      else if (sec <= 12) return { label: "3등급🛖", image: "https://ifh.cc/g/nL9opl.png" };
       else return { label: "4등급💩", image: "https://ifh.cc/g/XzsDMP.png" };
     }
 
