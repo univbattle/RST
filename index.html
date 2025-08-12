@@ -269,7 +269,12 @@ gtag('event', 'start_test', { source: 'button' });
     };
 
     // 결과 팝업의 다시하기 버튼도 동일 동작
-    restartBtn.onclick = () => startBtn.click();
+    restartBtn.onclick = () => {
+  // GA4: 다시하기 버튼 클릭 이벤트
+  gtag('event', 'retry_test', { source: 'button' });
+
+  startBtn.click();
+};
 
     // 링크 복사 + 토스트
     copyLinkBtn.onclick = () => {
@@ -391,11 +396,11 @@ gtag('event', 'start_test', { source: 'button' });
       lastGrade = grade;
 
 gtag('event', 'reaction_result', {
-  reaction_time_sec: reaction,   // 평균 계산용 숫자 파라미터
-  grade: grade.label,            // "1등급🎉" 같은 텍스트
-  attempts: currentIndex,        // 풀었던 개수(원하면)
-  max_boxes: maxBoxes,           // 전체 개수(원하면)
-  value: reaction                // GA4 기본 value도 같이 숫자로
+  reaction_time_sec: Number(sec), // 평균 계산용 숫자
+  grade: grade.label,             // "1등급🎉" 같은 텍스트
+  attempts: currentIndex,         // 시도한 개수
+  max_boxes: maxBoxes,            // 전체 개수
+  value: Number(sec)               // GA4 기본 value도 숫자로
 });
 
       let borderGradient = "linear-gradient(45deg, #000, #000)";
