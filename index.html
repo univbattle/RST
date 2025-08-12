@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-T9KXV64F');</script>
-<!-- End Google Tag Manager -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-91K64728JB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-91K64728JB');
+</script>
+
   <!-- OG 메타태그 -->
   <meta property="og:title" content="수강신청 반응속도 테스트" />
   <meta property="og:description" content="내 반응속도 등급을 확인해보세요!" />
@@ -161,10 +164,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   </style>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T9KXV64F"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
   <h1>🎓수강신청 반응속도 테스트</h1>
   <p>📶 인터넷 속도: <span id="speed">확인 중...</span> Mbps (평균)</p>
   <button id="startBtn">테스트 시작</button>
@@ -262,6 +261,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // 시작 버튼 (항상 완전 초기화 후 카운트다운)
     startBtn.onclick = () => {
+dataLayer.push({
+    event: "start_test"
+  });
       startBtn.disabled = true;   // 카운트다운 중 비활성화
       resetGameUI();
       countdown(3);
@@ -388,6 +390,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const sec = (totalReactionTime / 1000).toFixed(2);
       const grade = getGrade(sec);
       lastGrade = grade;
+dataLayer.push({
+    event: "show_result_event",
+    grade: grade.label,
+    reaction_time: sec
+  });
+
 
       let borderGradient = "linear-gradient(45deg, #000, #000)";
       if (grade.label.includes("1등급")) {
