@@ -1,20 +1,19 @@
-<!-- 디버그바 삭제된 HTML -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <!-- OG 메타태그 -->
+  <meta property="og:title" content="수강신청 반응속도 테스트" />
+  <meta property="og:description" content="내 반응속도 등급을 확인해보세요!" />
+  <meta property="og:image" content="https://univbattle.github.io/RST/thumbnail_v2.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://univbattle.github.io/RST/" />
+  <meta property="og:site_name" content="수강신청 반응속도 테스트" />
+  <meta property="og:type" content="website" />
 
-<meta property="og:title" content="수강신청 반응속도 테스트" />
-<meta property="og:description" content="내 반응속도 등급을 확인해보세요!" />
-<meta property="og:image" content="https://univbattle.github.io/RST/thumbnail_v2.png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://univbattle.github.io/RST/" />
-<meta property="og:site_name" content="수강신청 반응속도 테스트" />
-<meta property="og:type" content="website" />
-
-
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://univbattle.github.io/RST/thumbnail_v2.png" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://univbattle.github.io/RST/thumbnail_v2.png" />
 
   <meta charset="UTF-8">
   <title>수강신청 반응속도 테스트</title>
@@ -203,9 +202,23 @@
     const startBtn = document.getElementById("startBtn");
     const speedDisplay = document.getElementById("speed");
 
-    // ✅ 카카오 공유용 최근 등급 저장
+    // 진행 상태 / 타임아웃 관리
+    let gameRunning = false;
+    let timeouts = [];
+    function schedule(fn, ms) {
+      const id = setTimeout(fn, ms);
+      timeouts.push(id);
+      return id;
+    }
+    function clearAllTimeouts() {
+      timeouts.forEach(clearTimeout);
+      timeouts = [];
+    }
+
+    // 카카오 공유용 최근 등급
     let lastGrade = null;
 
+    // 속도 측정
     async function measureSpeed() {
       const url = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg";
       const sizeMB = 2.2;
@@ -221,9 +234,13 @@
     measureSpeed();
 
     function resetGameUI() {
+      gameRunning = false;
+      clearAllTimeouts();
+
       resultPopup.style.display = "none";
       resultContent.innerHTML = "";
       spawnArea.querySelectorAll(".checkbox-item").forEach(el => el.remove());
+
       startBtn.disabled = false;
       startBtn.textContent = "테스트 시작";
       lastGrade = null;
@@ -232,23 +249,53 @@
       checkboxes.length = 0;
     }
 
+    // 시작 버튼 (항상 완전 초기화 후 카운트다운)
     startBtn.onclick = () => {
-      startBtn.disabled = true;
+      startBtn.disabled = true;   // 카운트다운 중 비활성화
       resetGameUI();
       countdown(3);
     };
+
+    // 결과 팝업의 다시하기 버튼도 동일 동작
     restartBtn.onclick = () => startBtn.click();
 
+    // 링크 복사 + 토스트
     copyLinkBtn.onclick = () => {
-  navigator.clipboard.writeText(location.href)
-    .then(() => showToast('복사됐어요✔️'))
-    .catch(() => showToast('복사 실패😢'));
-};
+      navigator.clipboard.writeText(location.href)
+        .then(() => showToast('복사됐어요✔️'))
+        .catch(() => showToast('복사 실패😢'));
+    };
 
+    function showToast(message) {
+      const t = document.createElement('div');
+      t.textContent = message;
+      Object.assign(t.style, {
+        position: 'fixed',
+        left: '50%',
+        bottom: '24px',
+        transform: 'translateX(-50%)',
+        background: 'rgba(0,0,0,.8)',
+        color: '#fff',
+        padding: '8px 12px',
+        borderRadius: '8px',
+        fontSize: '14px',
+        zIndex: 9999,
+        opacity: '0',
+        transition: 'opacity .15s ease'
+      });
+      document.body.appendChild(t);
+      requestAnimationFrame(() => { t.style.opacity = '1'; });
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.addEventListener('transitionend', () => t.remove(), { once: true });
+      }, 1000);
+    }
+
+    // 카운트다운
     function countdown(sec) {
       if (sec > 0) {
         startBtn.textContent = `${sec}초 후 시작`;
-        setTimeout(() => countdown(sec - 1), 1000);
+        schedule(() => countdown(sec - 1), 1000);
       } else {
         startBtn.textContent = "진행 중...";
         startGame();
@@ -256,6 +303,12 @@
     }
 
     function startGame() {
+      gameRunning = true;
+
+      // 게임 시작과 동시에 버튼은 "다시하기"로 변경 & 활성화
+      startBtn.disabled = false;
+      startBtn.textContent = "다시하기";
+
       for (let i = 0; i < maxBoxes; i++) {
         const el = document.createElement("div");
         el.className = "checkbox-item";
@@ -266,37 +319,15 @@
       }
       showNext();
     }
-function showToast(message) {
-  const t = document.createElement('div');
-  t.textContent = message;
-  Object.assign(t.style, {
-    position: 'fixed',
-    left: '50%',
-    bottom: '24px',
-    transform: 'translateX(-50%)',
-    background: 'rgba(0,0,0,.8)',
-    color: '#fff',
-    padding: '8px 12px',
-    borderRadius: '8px',
-    fontSize: '14px',
-    zIndex: 9999,
-    opacity: '0',
-    transition: 'opacity .15s ease'
-  });
-  document.body.appendChild(t);
-  requestAnimationFrame(() => { t.style.opacity = '1'; });
-  setTimeout(() => {
-    t.style.opacity = '0';
-    t.addEventListener('transitionend', () => t.remove(), { once: true });
-  }, 1000);
-}
-
 
     function showNext() {
+      if (!gameRunning) return;
       if (currentIndex >= maxBoxes) return showResult();
 
       const delay = delayOptions[Math.floor(Math.random() * delayOptions.length)];
-      setTimeout(() => {
+      schedule(() => {
+        if (!gameRunning) return;
+
         const item = checkboxes[currentIndex];
         const { x, y } = randomPos();
         item.el.style.left = x + "px";
@@ -306,6 +337,7 @@ function showToast(message) {
 
         const input = item.el.querySelector("input");
         input.addEventListener("click", () => {
+          if (!gameRunning) return;
           if (input.checked && !input.disabled) {
             totalReactionTime += performance.now() - item.shownAt;
             input.disabled = true;
@@ -326,13 +358,22 @@ function showToast(message) {
     }
 
     function getGrade(sec) {
-      if (sec <= 6) return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
-      else if (sec <= 9) return { label: "2등급🙏", image: "https://ifh.cc/g/f1OJ6F.jpg" };
-      else if (sec <= 12) return { label: "3등급🧺", image: "https://ifh.cc/g/nL9opl.png" };
-      else return { label: "4등급💩", image: "https://ifh.cc/g/XzsDMP.png" };
-    }
+  if (sec <= 5.5) {
+    return { label: "1등급🎉", image: "https://ifh.cc/g/Rza4vQ.png" };
+  } else if (sec <= 6.9) {
+    return { label: "2등급🙏", image: "https://ifh.cc/g/f1OJ6F.jpg" };
+  } else if (sec <= 7.9) {
+    return { label: "3등급🧺", image: "https://ifh.cc/g/nL9opl.png" };
+  } else {
+    return { label: "4등급💩", image: "https://ifh.cc/g/XzsDMP.png" };
+  }
+}
+
 
     function showResult() {
+      gameRunning = false;
+      clearAllTimeouts();
+
       const sec = (totalReactionTime / 1000).toFixed(2);
       const grade = getGrade(sec);
       lastGrade = grade;
@@ -360,10 +401,12 @@ function showToast(message) {
       `;
 
       resultPopup.style.display = "block";
-      startBtn.innerHTML = `<img src="https://ifh.cc/g/5VcNTr.png" style="width:16px;height:16px;margin-bottom:3px;margin-right:1px;vertical-align:middle;" /> 다시하기`;
+      // 결과가 떠도 버튼은 “다시하기” 유지
+      startBtn.textContent = "다시하기";
       startBtn.disabled = false;
     }
 
+    // 카카오 공유
     shareBtn.onclick = () => {
       if (!lastGrade) {
         alert("먼저 테스트를 완료해주세요!");
@@ -372,7 +415,7 @@ function showToast(message) {
       Kakao.Share.sendDefault({
         objectType: 'feed',
         content: {
-         title: `내 수강신청 반응속도 등급은?       (${lastGrade.label})`,
+          title: `내 수강신청 반응속도 등급은?       (${lastGrade.label})`,
           description: '당신도 도전해보세요!',
           imageUrl: lastGrade.image,
           link: { mobileWebUrl: location.href, webUrl: location.href }
